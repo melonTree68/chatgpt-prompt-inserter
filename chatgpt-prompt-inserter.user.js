@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT Prompt Inserter
 // @namespace    https://github.com/local/chatgpt-prompt-inserter
-// @version      0.1.0
+// @version      0.1.1
 // @description  Manage reusable prompts and insert them into the ChatGPT composer without sending.
 // @author       Codex
 // @match        https://chatgpt.com/*
@@ -23,6 +23,7 @@
     managerOpen: false,
     editorOpen: false,
     editingId: null,
+    positionUpdateFrame: null,
     prompts: [],
     root: null,
     button: null,
@@ -466,7 +467,9 @@
 
     const rect = getComposerRect();
     if (!rect) {
-      state.button.classList.add("pd-hidden");
+      if (!state.button.classList.contains("pd-hidden")) {
+        state.button.classList.add("pd-hidden");
+      }
       return;
     }
 
@@ -479,13 +482,32 @@
       window.innerHeight - buttonSize - 8,
     );
 
-    state.button.style.left = `${Math.round(left)}px`;
-    state.button.style.top = `${Math.round(top)}px`;
-    state.button.classList.remove("pd-hidden");
+    const nextLeft = `${Math.round(left)}px`;
+    const nextTop = `${Math.round(top)}px`;
+    if (state.button.style.left !== nextLeft) {
+      state.button.style.left = nextLeft;
+    }
+    if (state.button.style.top !== nextTop) {
+      state.button.style.top = nextTop;
+    }
+    if (state.button.classList.contains("pd-hidden")) {
+      state.button.classList.remove("pd-hidden");
+    }
 
     if (state.pickerOpen) {
       positionPicker();
     }
+  }
+
+  function scheduleButtonPositionUpdate() {
+    if (state.positionUpdateFrame !== null) {
+      return;
+    }
+
+    state.positionUpdateFrame = window.requestAnimationFrame(() => {
+      state.positionUpdateFrame = null;
+      updateButtonPosition();
+    });
   }
 
   function positionPicker() {
@@ -947,14 +969,17 @@
   }
 
   function observeComposer() {
-    const observer = new MutationObserver(() => {
-      updateButtonPosition();
+    const observer = new MutationObserver((mutations) => {
+      const onlyOwnMutations = mutations.every((mutation) => (
+        state.root && state.root.contains(mutation.target)
+      ));
+      if (!onlyOwnMutations) {
+        scheduleButtonPositionUpdate();
+      }
     });
     observer.observe(document.body, {
       childList: true,
       subtree: true,
-      attributes: true,
-      attributeFilter: ["class", "style", "hidden", "aria-hidden"],
     });
   }
 
@@ -969,8 +994,8 @@
     state.root.addEventListener("submit", handleSubmit);
     document.addEventListener("click", handleDocumentClick, true);
     document.addEventListener("keydown", handleKeydown);
-    window.addEventListener("resize", updateButtonPosition);
-    window.addEventListener("scroll", updateButtonPosition, true);
+    window.addEventListener("resize", scheduleButtonPositionUpdate);
+    window.addEventListener("scroll", scheduleButtonPositionUpdate, true);
     observeComposer();
   }
 
