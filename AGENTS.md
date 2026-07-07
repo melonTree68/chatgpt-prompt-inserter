@@ -1,0 +1,5 @@
+- 自行维护 git repo 和 .gitignore。
+- 对这个项目，你需要自行 commit。
+- 如果任务是功能实现，那么一边 work 一边 commit，不要等完成所有工作后再一起 commit，而是每完成一定量的工作/每完成一个 objective 就把当前的 changes commit 掉。
+- 不必测试脚本在 Chrome/Tampermonkey 中的表现，只需验证是否符合 JavaScript 语法即可。
+- 脚本的每一个独立功能对应一个 project-local skill，不同功能的文档之间需要解耦。
