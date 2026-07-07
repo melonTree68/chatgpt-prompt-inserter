@@ -4,6 +4,7 @@
 // @version      0.1.1
 // @description  Manage reusable prompts and insert them into the ChatGPT composer without sending.
 // @author       Codex
+// @icon         https://chatgpt.com/favicon.ico
 // @match        https://chatgpt.com/*
 // @match        https://chat.openai.com/*
 // @grant        GM_getValue
@@ -391,6 +392,10 @@
         font-size: 12px;
       }
 
+      .pd-file-input {
+        display: none;
+      }
+
       .pd-hidden {
         display: none !important;
       }
@@ -646,8 +651,11 @@
       <div class="pd-modal">
         <div class="pd-modal-header">
           <div class="pd-modal-title">Prompt Manager</div>
+          <button class="pd-text-button" type="button" data-action="import-prompts">Import</button>
+          <button class="pd-text-button" type="button" data-action="export-prompts">Export</button>
           <button class="pd-text-button pd-primary" type="button" data-action="add">Add</button>
           <button class="pd-icon-button" type="button" data-action="close" title="Close" aria-label="Close">×</button>
+          <input class="pd-file-input" type="file" accept=".json,application/json" data-action="import-file" />
         </div>
         <div class="pd-modal-body">
           ${items || '<div class="pd-empty">No prompts yet. Click Add to create one.</div>'}
@@ -754,6 +762,108 @@
     state.editorOpen = false;
     state.editingId = null;
     renderEditor(null);
+  }
+
+  function isValidTimestamp(value) {
+    return typeof value === "string" && value.trim().length > 0 && !Number.isNaN(Date.parse(value));
+  }
+
+  function duplicateKey(prompt) {
+    return JSON.stringify([
+      String(prompt.name || "").trim(),
+      String(prompt.content || "").trim(),
+    ]);
+  }
+
+  function normalizeImportedPrompt(item, timestamp) {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      return null;
+    }
+
+    const name = String(item.name || "").trim();
+    const content = String(item.content || "").trimEnd();
+    if (!name || !content.trim()) {
+      return null;
+    }
+
+    const createdAt = isValidTimestamp(item.createdAt) ? String(item.createdAt) : timestamp;
+    const updatedAt = isValidTimestamp(item.updatedAt)
+      ? String(item.updatedAt)
+      : timestamp;
+
+    return {
+      id: makeId(),
+      name,
+      content,
+      createdAt,
+      updatedAt,
+    };
+  }
+
+  function exportPrompts() {
+    const blob = new Blob([JSON.stringify(state.prompts, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "chatgpt-prompts.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function importPromptsFromJson(value) {
+    const parsed = JSON.parse(value);
+    if (!Array.isArray(parsed)) {
+      throw new Error("Prompt import file must contain a JSON array.");
+    }
+
+    const timestamp = nowIso();
+    const seen = new Set(state.prompts.map((prompt) => duplicateKey(prompt)));
+    const imported = [];
+
+    parsed.forEach((item) => {
+      const prompt = normalizeImportedPrompt(item, timestamp);
+      if (!prompt) {
+        return;
+      }
+
+      const key = duplicateKey(prompt);
+      if (seen.has(key)) {
+        return;
+      }
+
+      seen.add(key);
+      imported.push(prompt);
+    });
+
+    if (imported.length > 0) {
+      savePrompts([...state.prompts, ...imported]);
+    }
+  }
+
+  function openImportFilePicker() {
+    if (!state.manager) {
+      return;
+    }
+
+    const input = state.manager.querySelector("input[data-action='import-file']");
+    if (input instanceof HTMLInputElement) {
+      input.value = "";
+      input.click();
+    }
+  }
+
+  function readImportFile(file) {
+    file.text()
+      .then((text) => {
+        importPromptsFromJson(text);
+      })
+      .catch((error) => {
+        window.alert(`Prompt import failed: ${error.message}`);
+      });
   }
 
   function deletePrompt(id) {
@@ -916,6 +1026,10 @@
       insertPrompt(prompt);
     } else if (action === "delete" && id) {
       deletePrompt(id);
+    } else if (action === "import-prompts") {
+      openImportFilePicker();
+    } else if (action === "export-prompts") {
+      exportPrompts();
     } else if (action === "add") {
       openEditor(null);
     } else if (action === "edit" && prompt) {
@@ -924,6 +1038,22 @@
       closeManager();
     } else if (action === "close-editor") {
       closeEditor();
+    }
+  }
+
+  function handleChange(event) {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) {
+      return;
+    }
+
+    if (target.getAttribute("data-action") !== "import-file") {
+      return;
+    }
+
+    const file = target.files && target.files[0];
+    if (file) {
+      readImportFile(file);
     }
   }
 
@@ -991,6 +1121,7 @@
     updateButtonPosition();
 
     state.root.addEventListener("click", handleRootClick);
+    state.root.addEventListener("change", handleChange);
     state.root.addEventListener("submit", handleSubmit);
     document.addEventListener("click", handleDocumentClick, true);
     document.addEventListener("keydown", handleKeydown);
