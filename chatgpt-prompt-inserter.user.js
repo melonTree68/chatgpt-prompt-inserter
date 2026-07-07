@@ -521,16 +521,22 @@
     }
 
     const buttonRect = state.button.getBoundingClientRect();
-    const panelWidth = Math.min(320, window.innerWidth - 24);
-    const panelHeight = Math.min(430, window.innerHeight - 140);
-    const left = Math.min(
-      Math.max(buttonRect.left, 12),
-      window.innerWidth - panelWidth - 12,
-    );
-    const top = Math.min(
-      Math.max(buttonRect.bottom + 8, 12),
-      window.innerHeight - panelHeight - 12,
-    );
+    const gap = 8;
+    const margin = 12;
+    const panelWidth = state.picker.offsetWidth || Math.min(320, window.innerWidth - margin * 2);
+    const panelHeight = state.picker.offsetHeight || Math.min(430, window.innerHeight - 140);
+    const maxLeft = window.innerWidth - panelWidth - margin;
+    const maxTop = window.innerHeight - panelHeight - margin;
+    const hasRoomBelow = buttonRect.bottom + gap + panelHeight <= window.innerHeight - margin;
+    const hasMoreRoomBelow = window.innerHeight - buttonRect.bottom >= buttonRect.top;
+    const preferredLeft = buttonRect.left + panelWidth <= window.innerWidth - margin
+      ? buttonRect.left
+      : buttonRect.right - panelWidth;
+    const preferredTop = hasRoomBelow || hasMoreRoomBelow
+      ? buttonRect.bottom + gap
+      : buttonRect.top - panelHeight - gap;
+    const left = Math.min(Math.max(preferredLeft, margin), maxLeft);
+    const top = Math.min(Math.max(preferredTop, margin), maxTop);
 
     state.picker.style.left = `${Math.round(left)}px`;
     state.picker.style.top = `${Math.round(top)}px`;
@@ -721,6 +727,7 @@
 
   function openPicker() {
     state.pickerOpen = true;
+    updateButtonPosition();
     renderPicker();
   }
 
