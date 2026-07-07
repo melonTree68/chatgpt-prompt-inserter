@@ -1,13 +1,20 @@
 ---
 name: chatgpt-prompt-inserter
-description: 维护 ChatGPT Prompt Inserter Tampermonkey 脚本时使用。涵盖脚本目标、DOM 注入、prompt 存储、输入框插入策略、Chrome/Tampermonkey 调试和常见问题。
+description: 维护 ChatGPT Prompt Inserter 的 prompt insertion 功能时使用。涵盖脚本目标、DOM 注入、prompt 存储、输入框插入策略、Chrome/Tampermonkey 调试和常见问题；不承载其它功能的维护知识。
 ---
 
 # ChatGPT Prompt Inserter
 
 ## 适用范围
 
-当任务涉及 `chatgpt-prompt-inserter.user.js` 的功能开发、调试或维护时使用本 skill。脚本内容、代码和 UI 文案保持英文；项目 skill 和协作说明保持中文。
+当任务涉及 `chatgpt-prompt-inserter.user.js` 中 prompt insertion 功能的开发、调试或维护时使用本 skill。脚本内容、代码和 UI 文案保持英文；项目 skill 和协作说明保持中文。
+
+## 功能边界
+
+- 本 skill 只记录 prompt insertion 功能：prompt 列表管理、picker、composer 插入、Tampermonkey 存储、ChatGPT DOM 注入和相关调试经验。
+- 不要把 prompt insertion 之外的新功能设计、工作流、调试经验或常见问题写入本 skill。
+- 新增非 prompt insertion 功能时，使用 `$skill-creator` 在 `.agents/skills` 下创建独立 project-local skill，并只在 `project-progress` / `project-story` 中登记全局索引。
+- 如果新功能复用同一个 userscript 文件，也仍然按功能边界归档到对应 skill；本 skill 只保留与 prompt insertion 直接相关的内容。
 
 ## 当前功能
 

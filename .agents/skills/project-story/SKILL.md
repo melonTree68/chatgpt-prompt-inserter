@@ -1,6 +1,6 @@
 ---
 name: project-story
-description: 记录 prompt-dock 项目的逻辑发展顺序和故事。用于按依赖与动机顺序理解项目，而不是查看具体实现路径。
+description: 记录 chatgpt-prompt-inserter 项目的逻辑发展顺序和故事。用于按依赖与动机顺序理解项目，并维护各功能独立 skill 的知识边界。
 ---
 
 # Project Story
@@ -21,4 +21,10 @@ description: 记录 prompt-dock 项目的逻辑发展顺序和故事。用于按
 
 - 动机：脚本依赖 ChatGPT 页面 DOM 和 Tampermonkey 环境，后续维护需要记录选择器、插入策略和常见问题。
 - 已实现功能：项目本地 skill 记录当前功能、调试流程、常见问题和项目进展。
+- 对应 skill：`project-progress`、`chatgpt-prompt-inserter`。
+
+## 4. 功能级知识解耦
+
+- 动机：项目将继续开发 prompt insertion 之外的功能。如果所有知识都沉淀到 `chatgpt-prompt-inserter` 或全局标准 skill，后续功能会互相污染上下文，增加维护成本。
+- 已实现功能：确立“一个功能对应一个 project-local skill”的规则；现有 `chatgpt-prompt-inserter` 只作为 prompt insertion 功能 skill；未来新增功能必须先拥有自己的功能 skill，再把全局进展索引写入 `project-progress` 和本 skill。
 - 对应 skill：`project-progress`、`chatgpt-prompt-inserter`。
