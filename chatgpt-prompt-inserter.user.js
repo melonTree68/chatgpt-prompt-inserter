@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT Prompt Inserter
 // @namespace    https://github.com/local/chatgpt-prompt-inserter
-// @version      0.1.1
+// @version      0.2.1
 // @description  Manage reusable prompts and insert them into the ChatGPT composer without sending.
 // @author       Codex
 // @icon         https://chatgpt.com/favicon.ico
