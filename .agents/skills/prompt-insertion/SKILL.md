@@ -1,9 +1,9 @@
 ---
-name: chatgpt-prompt-inserter
+name: prompt-insertion
 description: 维护 ChatGPT Prompt Inserter 的 prompt insertion 功能时使用。涵盖脚本目标、DOM 注入、prompt 存储、输入框插入策略、Chrome/Tampermonkey 调试和常见问题；不承载其它功能的维护知识。
 ---
 
-# ChatGPT Prompt Inserter
+# Prompt Insertion
 
 ## 适用范围
 

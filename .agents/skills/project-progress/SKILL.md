@@ -19,23 +19,23 @@ description: 记录 chatgpt-prompt-inserter 项目各模块或功能已经完成
 - 实现路径：在仓库根目录维护 Git 忽略规则，并按独立 objective 提交。
 - 对应 skill：本 skill。
 
-## ChatGPT Prompt Inserter
+## Prompt Insertion
 
 - 动机：在 ChatGPT 网页端快速复用常用 prompt，只填入输入框，不自动发送。
 - 已实现功能：新增单文件 Tampermonkey 脚本，提供浮动入口、compact picker、prompt 管理主面板、Add/Edit/Delete、持久化存储和 composer 插入。
 - 实现路径：`chatgpt-prompt-inserter.user.js` 通过 Tampermonkey `GM_getValue` / `GM_setValue` 管理 prompt；通过 DOM 注入 UI；通过 textarea/contenteditable 插入策略同步 ChatGPT composer。
-- 对应 skill：`chatgpt-prompt-inserter`。
+- 对应 skill：`prompt-insertion`。
 
 ## 功能级知识解耦
 
 - 动机：项目即将开发 prompt insertion 之外的功能，需要避免单个功能 skill 承载整个项目知识，降低后续维护耦合。
-- 已实现功能：明确每个功能对应一个独立 project-local skill；现有 `chatgpt-prompt-inserter` skill 只覆盖 prompt insertion；新增功能必须创建或更新自己的功能 skill。
+- 已实现功能：明确每个功能对应一个独立 project-local skill；现有 `prompt-insertion` skill 只覆盖 prompt insertion；新增功能必须创建或更新自己的功能 skill。
 - 实现路径：在标准项目 skills 中记录全局归档原则；在功能 skill 中声明适用边界和排除范围。
-- 对应 skill：本 skill、`project-story`、`chatgpt-prompt-inserter`。
+- 对应 skill：本 skill、`project-story`、`prompt-insertion`。
 
 ## 项目知识管理
 
 - 动机：让后续开发者或 agent 能直接从项目本地 skill 理解系统状态和维护约束。
-- 已实现功能：新增专门的 `chatgpt-prompt-inserter` skill，并补齐 `project-progress` 与 `project-story` 两个标准项目 skill；确立功能级 skill 解耦规则。
+- 已实现功能：新增专门的 `prompt-insertion` skill，并补齐 `project-progress` 与 `project-story` 两个标准项目 skill；确立功能级 skill 解耦规则。
 - 实现路径：知识统一归档到 `.agents/skills`，不额外创建临时报告或独立 docs。
-- 对应 skill：本 skill、`project-story`、`chatgpt-prompt-inserter`。
+- 对应 skill：本 skill、`project-story`、`prompt-insertion`。
