@@ -17,13 +17,19 @@ description: 记录 chatgpt-prompt-inserter 项目的逻辑发展顺序和故事
 - 已实现功能：Tampermonkey 脚本在 ChatGPT composer 左侧提供浮动入口；compact picker 负责插入 prompt；主面板负责 Add、Edit、Delete 管理；prompt 本地持久化保存。
 - 对应 skill：`prompt-insertion`。
 
-## 3. 项目知识管理
+## 3. Prompt List Import/Export
+
+- 动机：当 prompt list 已经成为用户的持久数据后，需要支持备份、迁移和跨环境复用。
+- 已实现功能：Prompt Manager 可导出当前 prompt list 为 JSON 数组，也可从 JSON 数组合并导入 prompt；导入时跳过同名同内容重复项，并为导入项重建 id。
+- 对应 skill：`prompt-list-io`。
+
+## 4. 项目知识管理
 
 - 动机：脚本依赖 ChatGPT 页面 DOM 和 Tampermonkey 环境，后续维护需要记录选择器、插入策略和常见问题。
 - 已实现功能：项目本地 skill 记录当前功能、调试流程、常见问题和项目进展。
-- 对应 skill：`project-progress`、`prompt-insertion`。
+- 对应 skill：`project-progress`、`prompt-insertion`、`prompt-list-io`。
 
-## 4. 功能级知识解耦
+## 5. 功能级知识解耦
 
 - 动机：项目将继续开发 prompt insertion 之外的功能。如果所有知识都沉淀到项目同名 skill 或全局标准 skill，后续功能会互相污染上下文，增加维护成本。
 - 已实现功能：确立“一个功能对应一个 project-local skill”的规则；现有 `prompt-insertion` 只作为 prompt insertion 功能 skill；未来新增功能必须先拥有自己的功能 skill，再把全局进展索引写入 `project-progress` 和本 skill。

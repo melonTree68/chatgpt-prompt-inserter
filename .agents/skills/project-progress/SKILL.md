@@ -26,6 +26,13 @@ description: 记录 chatgpt-prompt-inserter 项目各模块或功能已经完成
 - 实现路径：`chatgpt-prompt-inserter.user.js` 通过 Tampermonkey `GM_getValue` / `GM_setValue` 管理 prompt；通过 DOM 注入 UI；通过 textarea/contenteditable 插入策略同步 ChatGPT composer。
 - 对应 skill：`prompt-insertion`。
 
+## Prompt List Import/Export
+
+- 动机：prompt list 需要可备份、迁移和在不同浏览器或 Tampermonkey 环境间复用。
+- 已实现功能：Prompt Manager 支持导出 JSON 数组文件、从 JSON 数组文件合并导入 prompt、跳过同名同内容重复项，并在 userscript metadata 中配置 ChatGPT 官方 favicon URL。
+- 实现路径：`chatgpt-prompt-inserter.user.js` 使用浏览器原生 `Blob` / download link 导出；使用隐藏 file input 读取 JSON；导入时清洗字段、重建 id、保留合法时间字段并调用现有 `savePrompts()` 刷新 UI 和存储。
+- 对应 skill：`prompt-list-io`。
+
 ## 功能级知识解耦
 
 - 动机：项目即将开发 prompt insertion 之外的功能，需要避免单个功能 skill 承载整个项目知识，降低后续维护耦合。
@@ -36,6 +43,6 @@ description: 记录 chatgpt-prompt-inserter 项目各模块或功能已经完成
 ## 项目知识管理
 
 - 动机：让后续开发者或 agent 能直接从项目本地 skill 理解系统状态和维护约束。
-- 已实现功能：新增专门的 `prompt-insertion` skill，并补齐 `project-progress` 与 `project-story` 两个标准项目 skill；确立功能级 skill 解耦规则。
+- 已实现功能：维护 `prompt-insertion`、`prompt-list-io` 等功能级 skill，并补齐 `project-progress` 与 `project-story` 两个标准项目 skill；确立功能级 skill 解耦规则。
 - 实现路径：知识统一归档到 `.agents/skills`，不额外创建临时报告或独立 docs。
-- 对应 skill：本 skill、`project-story`、`prompt-insertion`。
+- 对应 skill：本 skill、`project-story`、`prompt-insertion`、`prompt-list-io`。
