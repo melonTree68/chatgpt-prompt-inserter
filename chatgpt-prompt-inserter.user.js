@@ -441,17 +441,24 @@
       "form div[contenteditable='true']",
     ];
 
-    const candidates = selectors.flatMap((selector) => Array.from(document.querySelectorAll(selector)));
-    const unique = Array.from(new Set(candidates));
-    return unique.reverse().find((element) => {
-      if (!(element instanceof HTMLElement)) {
-        return false;
+    for (const selector of selectors) {
+      const candidates = Array.from(document.querySelectorAll(selector));
+      const composer = candidates.reverse().find((element) => {
+        if (!(element instanceof HTMLElement)) {
+          return false;
+        }
+        if (element.closest(`#${ROOT_ID}`)) {
+          return false;
+        }
+        return Boolean(getVisibleRect(element));
+      });
+
+      if (composer) {
+        return composer;
       }
-      if (element.closest(`#${ROOT_ID}`)) {
-        return false;
-      }
-      return Boolean(getVisibleRect(element));
-    }) || null;
+    }
+
+    return null;
   }
 
   function getComposerRect() {

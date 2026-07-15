@@ -64,5 +64,6 @@ description: 维护 ChatGPT Prompt Inserter 的 prompt insertion 功能时使用
 - **主面板误提供插入能力**：主面板条目只能有 `Edit` 和 `Delete`，`Insert` 只能存在于 compact picker。
 - **Tampermonkey 存储不可用**：确认 metadata 中保留 `@grant GM_getValue` 和 `@grant GM_setValue`。
 - **页面导航后按钮位置错误**：确认 `MutationObserver`、scroll、resize 仍通过 `scheduleButtonPositionUpdate()` 调用 `updateButtonPosition()`。
+- **存在 writing block 时按钮定位到 writing block 左侧**：`findComposer()` 必须按 selector 数组逐级查找，确保 `#prompt-textarea` 等精确 selector 优先于通用 `contenteditable` / `ProseMirror` selector；不要合并所有候选后整体反转，否则页面中的 writing block 会覆盖真实 composer。
 - **picker 总出现在屏幕固定位置**：不要只把 picker 向下定位后用 viewport 边界 clamp；当按钮下方空间不足时，应把 picker 翻到按钮上方，并在 `openPicker()` 时同步调用 `updateButtonPosition()`，确保使用最新按钮位置。
 - **启用脚本后 ChatGPT 加载卡住**：避免观察整个页面的属性变化，也不要让 observer 响应脚本自身 DOM 的 style/class 更新；定位更新必须通过 `requestAnimationFrame` 合并，且只在值变化时写入按钮 style/class。
